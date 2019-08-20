@@ -1,0 +1,143 @@
+\documentclass[portrait,color=UCLrichred,margin=3cm]{uclposter}
+
+\title{Mass Preservation for Respiratory Motion Registration in both PET and CT}
+
+\author[1 *]{Elise C. Emond}
+\author[1,2]{Alexandre Bousse}
+\author[1]{Ludovica Brusaferri}
+\author[1]{Ashley M. Groves}
+\author[1]{Brian F. Hutton}
+\author[1]{Kris Thielemans}
+
+\affil[1]{INM, University College London, UK}
+\affil[2]{LaTIM,
+Universit\'e de Bretagne Occidentale, France}
+\affil[*]{elise.emond.16@ucl.ac.uk}
+
+\usepackage[style=ieee,maxbibnames=1,minbibnames=1,maxcitenames=1,mincitenames=1,backend=biber,defernumbers=false]{biblatex}
+\addbibresource{./Biblio.bib}
+
+\input{commands.tex}
+
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\usepackage[acronym]{glossaries}
+\newacronym{STV}{STV}{smoothed total variation}
+\newacronym{NRMSD}{NRMSD}{normalised root mean squared deviation}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{multicols}{4}
+
+\section*{Introduction}
+Density and activity variations caused by the compression or dilation of the lungs during the respiration~\cite{Simon2000,Cuplov2018} are rarely accounted for in image registration, and more particularly in PET.
+%This means that the effects of respiratory motion are usually approximated as a displacement-only problem.
+%Due to the duration of PET acquisitions, respiratory and cardiac motion inevitably occurs, compromising accurate localisation of organs or tumoral masses as well as quantification.
+%For this reason, 
+Motion compensation is an active area of research, usually relying on registration either on gated reconstructed images or within joint reconstruction of motion and activity~\cite{Pepin2014}.
+Although standard registration can diminish mispositioning issues, changes in density and activity concentration should be included within the registration for accurate deformation field estimation. This could provide in return information on lung rigidity and elasticity, thus be a biomarker for lung diseases.
+One way to do so is to add the Jacobian determinant within the similarity measure to approximate the volume changes, linked to density and activity changes~\cite{Reinhardt2008,Thielemans2009,Gigengack2012}. Mass-preserving registration is however non-trivial and therefore regularisation and similarity measures need to be optimised especially in the presence of noisy data. 
+
+The aim of this work is to assess the feasibility of incorporating the Jacobian determinant in the similarity measure for accurate mass-preserving image registration. It could be used for respiratory motion correction in PET and CT data, \eg for diffuse lung diseases or lung tumours.
+
+
+%\section*{Highlight boxes}
+
+%\begin{highlightbox}
+%	The \textbackslash highlightbox command inserts a coloured box, the default colour is a lighter version of the banner colour.
+%\end{highlightbox}
+
+%\begin{highlightbox}[UCLdarkblue!20!white]
+%	The colour of a \textbackslash highlightbox can also be changed.
+%\end{highlightbox}
+
+\columnbreak
+
+\section*{Registration}
+
+We denote the tracer activity distribution $f\in\mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+)$ and density distribution  $\mu\in\mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+)$.
+
+The optimisation problem consists in finding a deformation $\hat{\varphi}$ such that the similarities between two images $f$ and $g$ are increased, \eg via minimisation of a similarity measure $\mathcal{C}$:
+\begin{equation*}
+    \hat{\varphi} \in \arg \min_{\varphi}\left\{\,\mathcal{C}(\widetilde{\mathcal{W}}_\varphi f,g) + \beta \mathcal{S}(\varphi)\,\right\}\:,
+\end{equation*}
+where $\mathcal{S}$ is a roughness penalty and $\beta$ its associated weight to ensure the estimation of a realistic deformation field.
+In this work, $\mathcal{C}$ is the sum of squared differences (SSD).
+
+In this work, a B-spline parametrisation of $\varphi$ is used. %The discretisation is performed after warping of the continuous distributions.
+
+\subsection*{Standard Model}
+
+The standard warping operator $\Warp_\varphi : \mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+) \rightarrow \mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+)$ associated to a diffeomorphism $\varphi : \mathbb{R}^3 \rightarrow \mathbb{R}^3$ is defined as:
+\begin{equation*}
+    \Warp_\varphi : h \mapsto h \circ \varphi \quad \text{where } h = f\text{ or }h=\mu\:.
+\end{equation*}
+
+\subsection*{Mass-Preserving Model}
+
+A mass-preserving warping operator $\widetilde{\Warp}_\varphi : \mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+) \rightarrow \mathcal{C}^{0}(\mathbb{R}^3,\mathbb{R}^+)$ can be defined as:
+\begin{equation*}
+    \widetilde{\Warp}_\varphi : h \mapsto \left|\, \det(J_\varphi)\,\right| \cdot h \circ \varphi \:.
+\end{equation*}
+where $\det(J_\varphi(\boldr))$ is the determinant of the Jacobian matrix of the partial derivatives of $\varphi$ at a point $\boldr\in\mathbb{R}^3$.
+
+\subsection*{Regularisation}
+
+In order to compensate for the noise in the images (especially for PET images, as demonstrated in \cite{Thielemans2009}), two priors on the Jacobian determinant images are considered:
+%\begin{equation*}
+%\mathcal{S}(\varphi)= -\frac{1}{2}\sum_{j=1}^{n_v}\sum_{k\in\mathcal{N}_j}\omega_{j,k}\Psi(\left|\bm{J}_{\varphi}\right|_j - \left|\bm{J}_{\varphi}\right|_k)
+%\end{equation*}
+%where $\omega_{j,k}$ in the inverse distance between the centre of a voxel $j$ and the centre of a voxel $k$ and $\mathcal{N}_j$ is the neighbourhood of voxel $j$ and $\Psi$ is the penalty function. 
+%Two penalties were considered:
+\begin{itemize}
+    \item A quadratic Gibbs prior.%~\cite{Mumcuoglu1996}.
+    %\begin{equation*}
+    %\Psi(\varphi) \triangleq (\left|\bm{J}_{\varphi}\right|_j - \left|\bm{J}_{\varphi}\right|_k)^2
+    %\end{equation*}
+    \item A \gls{STV} prior.%~\cite{RUDIN1992259}. %on the Jacobian determinant image:
+    %\begin{equation*}
+    %\Psi(\varphi) = \sqrt{(||\left|\bm{J}_{\varphi}\right|_j - \left|\bm{J}_{\varphi}\right|_k)||_2)^2 + \alpha^2}
+    %\end{equation*}
+    %where $||\cdot||_2$ is the $\mathcal{L}_2$-norm and $\alpha$ the smoothing parameter.
+\end{itemize}
+
+The gradients use the analytical derivatives of $\left|\, \det(J_\varphi)\,\right|$.
+
+\section*{Study on Patient Data}
+
+%TODO including different noise realisations
+
+FDG-PET listmode and CINE-CT data were acquired on a GE Discovery STE with monitoring using the Varian RPM system~\cite{Cuplov2018}. Both PET and CINE-CT data were gated into $5$ bins based on the RPM displacement. The PET images were reconstructed with $60$ iterations of OSEM including scatter and randoms modelling, using $7$ subsets and post-filtering. The gated attenuation ($\mu$) maps matched the PET gates.
+Using an in-house implementation, the end-expiration $\mu$ and PET images, $\mu_\mathrm{exp}$ and $f_\mathrm{exp}$ respectively, were then registered to the end-inspiration $\mu$ and PET images, $\mu_\mathrm{insp}$ and $f_\mathrm{insp}$ respectively, using, for each modality, either quadratic regularisation or \gls{STV} regularisation.
+
+\subsection*{Results on CT images}
+\subsection*{Results on PET images}
+
+\section*{Discussion and Conclusion}
+
+%\section*{Colours}
+%\begin{tikzpicture}
+%	\foreach \x[count=\xi] in {UCLlightpurple, UCLdarkpurple, UCLpurple, UCLblueceleste, UCLlightblue, UCLskyblue, UCLbrightblue, UCLnavyblue, UCLdarkblue, UCLdarkgreen, UCLmidgreen, UCLbrightgreen, UCLlightgreen, UCLstone, UCLdarkgrey, UCLdarkbrown, UCLdarkred, UCLburgundy, UCLpink, UCLrichred, UCLmidred, UCLorange, UCLyellow, UCLwhite, UCLblack}
+%	{
+%	\fill[fill=\x] (0,-\xi) rectangle +(0.9,0.9) node[anchor=north west, inner sep=3pt] {\x};
+%	}
+%\end{tikzpicture}
+
+%\columnbreak
+
+
+%\columnbreak
+
+\AtNextBibliography{\small}
+\printbibliography
+
+\end{multicols}
+	
+\end{document}
