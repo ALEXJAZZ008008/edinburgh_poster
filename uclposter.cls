@@ -161,7 +161,7 @@
 \makeatletter
 
 % affiliations on one line
-\renewcommand\AB@affilsepx{\hspace{0.5em}\protect\Affilfont}
+%\renewcommand\AB@affilsepx{\hspace{0.5em}\protect\Affilfont}
 
 % set lengths
 \newlength{\uclposter@bannertextheight}
