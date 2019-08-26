@@ -32,18 +32,10 @@
 \large
 
 \section*{Introduction}
-Respiratory motion causes artefacts and loss of resolution in the thoracic region in PET. Many methods have been proposed to correct for respiratory motion, usually involving registration between a reference volume and a set of volumes in different positions in the respiratory cycle obtained by gating. However, such pair-wise registration is sensitive to noise. It also does not allow prediction of the respiratory state for data not used to estimate the motion, for instance, to be used for real time motion correction. Surrogate driven motion models attempt to overcome these deficiencies by relating the motion in the data to a surrogate signal~\cite{McClelland2013}. The model outputs a transformation or deformation field for every value of the surrogate signal. Motion models are calculated on a series of either time or gating based volumes.
-
-The benefits of using attenuation correction for PET image registration are unclear. If images are reconstructed using a static attenuation map ($\mu$-map), then artefacts caused by the misalignment between the activity distribution and the $\mu$-map would hamper image registration. It could therefore be advantageous to estimate motion on Non-Attenuation-Corrected (NAC) images. However, contrast may be too low to calculate an accurate motion model and artefacts associated with the mismatch between the acquisition and system model could also obscure the underlying motion. 
-
-The aim of this work is to investigate whether Time-of-Flight (TOF) can sufficiently increase the contrast and lower the noise of NAC images to facilitate the calculation of accurate motion models.
+Respiratory motion causes artefacts and loss of resolution in PET. Many methods have been proposed to correct for respiratory motion, usually involving registration between a reference volume and a set of volumes in different positions in the respiratory cycle. However, such pair-wise registration is sensitive to noise. It also does not allow prediction of the respiratory state for data not used to estimate the motion. Surrogate driven motion models attempt to overcome these deficiencies by relating the motion in the data to a surrogate signal~\cite{McClelland2013}. The model outputs a transformation or deformation field for every value of the surrogate signal. The benefits of using attenuation correction for PET image registration are unclear. If images are reconstructed using a static attenuation map ($\mu$-map), then artefacts caused by the misalignment between the activity distribution and the $\mu$-map would hamper image registration. It could therefore be advantageous to estimate motion on Non-Attenuation-Corrected (NAC) images. However, contrast may be too low to calculate an accurate motion model and artefacts associated with the mismatch between the acquisition and system model could also obscure the underlying motion. The aim of this work is to investigate whether Time-of-Flight (TOF) can sufficiently increase the contrast and lower the noise of NAC images to facilitate the calculation of accurate motion models.
 
 \section*{Methods}
-XCAT was used to generate volumes. Activity concentrations were derived from a static FDG patient scan. The field of view included the base of the lungs, diaphragm and the top of the liver with a $40$mm diameter spherical lesion placed in the right lung.
-
-PET acquisitions were simulated using STIR~\cite{Thielemans2012,Efthimiou2018} through SIRF~\cite{Ovtchinnikov2017} to forward project the input data to sinograms using the geometry of a GE Discovery 710 and, where relevant, a TOF resolution of $375$ps similar to the GE Signa. Attenuation was included in the simulation. Scatter and randoms were not taken into account in the simulation. Multiple noise realisations were generated to simulate an acquisition as if it had been gated into $6$ bins over an acquisition of $120$s. Data were reconstructed without attenuation correction using OSEM with $9$ full iterations and $18$ subsets. 
-
-NiftyRegResp was used to estimate the Respiratory-Correspondence-Model (RCM). Following~\cite{McClelland2013} a direct correspondence motion model was used.
+XCAT was used to generate volumes. Activity concentrations were derived from a static FDG patient scan. The field of view included the base of the lungs, diaphragm and the top of the liver with a $40$mm diameter spherical lesion placed in the right lung. PET acquisitions were simulated using STIR~\cite{Thielemans2012,Efthimiou2018} through SIRF~\cite{Ovtchinnikov2017} to forward project the input data to sinograms using the geometry of a GE Discovery 710 and, where relevant, a TOF resolution of $375$ps similar to the GE Signa. Attenuation was included in the simulation. Scatter and randoms were not taken into account. Multiple noise realisations were generated to simulate an acquisition as if it had been gated into $6$ bins over an acquisition of $120$s. Data were reconstructed without attenuation correction using OSEM with $9$ full iterations and $18$ subsets. NiftyRegResp was used to estimate the Respiratory-Correspondence-Model (RCM). Following~\cite{McClelland2013} a direct correspondence motion model was used.
 
 \end{multicols}
 
@@ -62,7 +54,7 @@ NiftyRegResp was used to estimate the Respiratory-Correspondence-Model (RCM). Fo
     
     \vspace{1.0cm}
     
-    \scalebox{1.7}
+    \scalebox{1.6}
     {
         \begin{tabular}{||c|ccc||}
             \hline
@@ -84,7 +76,7 @@ NiftyRegResp was used to estimate the Respiratory-Correspondence-Model (RCM). Fo
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{com_graph.png}
+    \includegraphics[width=0.6\linewidth]{com_graph.png}
     \caption{The path of the COM of the lesion.}
     \label{fig:com_graph}
 \end{figure}
@@ -94,15 +86,16 @@ NiftyRegResp was used to estimate the Respiratory-Correspondence-Model (RCM). Fo
 \large
 
 \section*{Results}
-We compared $3$ RCMs, calculated from the PET XCAT volumes, nonTOF NAC reconstructions and TOF NAC reconstructions. The $3$ RCMs were used to warp the PET volume generated by XCAT at the mean breathing position to position at each gate. These estimated volumes were then compared to the original XCAT input volumes. First, differences volumes were obtained by subtracting the original XCAT volume and warped volumes at the same gate. The mean MSE was found to be lower for the NAC TOF data than for the NAC nonTOF.
-
-In addition, the centre of mass (COM) of the lesion was also tracked over the $6$ gates, by warping a volume only including the lesion in the reference position as above. The path of the NAC TOF data follows the ground truth path much closer than the NAC nonTOF data, and is quite close to the XCAT-derived motion.
+We compared $3$ RCMs, calculated from the PET XCAT volumes, nonTOF NAC reconstructions and TOF NAC reconstructions. The $3$ RCMs were used to warp the PET volume generated by XCAT at the mean breathing position to position at each gate. These estimated volumes were then compared to the original XCAT input volumes. First, differences volumes were obtained by subtracting the original XCAT volume and warped volumes at the same gate. The mean MSE was found to be lower for the NAC TOF data than for the NAC nonTOF. In addition, the centre of mass (COM) of the lesion was also tracked, by warping a volume only including the lesion in the reference position. The path of the NAC TOF data follows the ground truth path much closer than the NAC nonTOF data.
 
 \section*{Discussion and Conclusions}
 Motion models derived from NAC TOF volumes were found to be more robust than when using NAC nonTOF, both visually and when comparing MSE and COM. This is likely due to the improved image contrast of NAC TOF images. In the future, research will focus on investigating the robustness of the motion model estimation to different noise levels, acquisition duration and size of lesion.
 
 \AtNextBibliography{\small}
 \printbibliography
+
+This research is supported by GE Healthcare, the NIHR UCLH Biomedical Research Centre and the EPSRC-funded UCL Centre for Doctoral Training in Medical Imaging (EP/L016478/1).
+Elise~C.~Emond is supported by GlaxoSmithKline (BIDS3000030921).
 
 \end{multicols}
 \end{document}
