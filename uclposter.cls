@@ -92,7 +92,7 @@
 \pagenumbering{gobble} % remove page numbers
 
 % font size
-\renewcommand{\LARGE}{\fontsize{100}{120}\selectfont}
+\renewcommand{\LARGE}{\fontsize{80}{100}\selectfont}
 \renewcommand{\Large}{\fontsize{45}{50}\selectfont}
 \renewcommand{\large}{\fontsize{35}{40}\selectfont}
 \renewcommand{\normalsize}{\fontsize{30}{35}\selectfont}
@@ -116,11 +116,11 @@
 \RequirePackage{amsmath}
 \RequirePackage{mathtools}
 \RequirePackage{mathspec}
-\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+%\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
 %\setallmainfonts{Helvetica}
-\setsansfont{URW Gothic L}
-\setallmainfonts{EB Garamond}
-\newfontfamily{\bannerfont}{URW Gothic L}[WordSpace=1.2]
+%\setsansfont{URW Gothic L}
+%\setallmainfonts{EB Garamond}
+%\newfontfamily{\bannerfont}{URW Gothic L}[WordSpace=1.2]
 
 %-------------------------------------------------------------------------------
 % Official colours
@@ -181,7 +181,8 @@
 	}%
 	% include title
 	\parbox[s][\uclposter@bannertextheight][s]{\uclposter@bannertextwidth}{%
-		\color{\uclposter@foregroundcolor}\bannerfont\raggedright%
+		%\color{\uclposter@foregroundcolor}\bannerfont\raggedright%
+		\color{\uclposter@foregroundcolor}\raggedright%
 		{\LARGE\bfseries\addfontfeature{LetterSpace=3}\@title}%
 		\par\vfill%
 		{\Large\AB@authlist}%
